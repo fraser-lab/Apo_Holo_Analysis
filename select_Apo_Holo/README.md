@@ -40,7 +40,8 @@ Input: List of PDBs classified as holo; List of PDBs classified as apo, PDB Ids 
 Output: Paired List of Apo/Holo PDBs
 
 
-6) select_for_qfit.sh.     #This script takes the Apo/Holo pairs and determines for every holo PDB, which Apo PDB is closest in resolution to move foward in the analysis.
+
+6) select_for_qfit.py     #This script takes the Apo/Holo pairs and determines for every holo PDB, which Apo PDB is closest in resolution to move foward in the analysis.
 
 Input: Paired list of Apo/Holo PDBs.
 Output: Final paired list of Apo/Holo PDBs.
