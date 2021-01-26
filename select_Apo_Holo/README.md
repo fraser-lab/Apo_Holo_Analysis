@@ -7,9 +7,23 @@ Note that some of these scripts pull commands from qFit post analysis scripts. I
 To get to the final dataset, we used the following scripts (in this order): 
 
 1) remove_nucleotides.sh         #This script removed any PDB IDs that contained RNA or DNA fragments. Uses qFit. 
+
 Input: List of PDB IDs with resolution equal to or less than 2 angstroms.
 Output: List of PDBs with resolution equal to or less than 2 angstroms and contain no nucelotide fragments.
 
-2) determine_apo_or_holo.sh.     #This script identifies the largest ligand in the PDB and determines if the PDB should be categorized as apo or holo. Apo structures are defined as having only ligands with less than 10 heavy atoms, excluding crystallographic additives. 
+
+
+2) determine_apo_or_holo.sh     #This script identifies the largest ligand in the PDB and determines if the PDB should be categorized as apo or holo. Apo structures are defined as having only ligands with less than 10 heavy atoms, excluding crystallographic additives. 
+
 Input: List of PDBs with resolution equal to or less than 2 angstroms and contain no nucelotide fragments.
 Output: List of PDBs classified as holo; List of PDBs classified as apo.
+
+
+
+3) gather_seq.sh     #This script gathers the amino acid sequence of each PDB. This script calls the get_seq.py script also located in this folder.
+
+Input: List of PDBs classified as holo; List of PDBs classified as apo.
+Output: PDB IDs + sequence
+
+4) run_mtz_dump.sh    #This script runs the phenix command phenix.mtz_dump to gather information on the unit cell and space group of the PDB.
+
