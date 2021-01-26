@@ -25,5 +25,4 @@ Output: List of PDBs classified as holo; List of PDBs classified as apo.
 Input: List of PDBs classified as holo; List of PDBs classified as apo.
 Output: PDB IDs + sequence
 
-4) run_mtz_dump.sh    #This script runs the phenix command phenix.mtz_dump to gather information on the unit cell and space group of the PDB.
-
+4) grab_space_unit.sh    #This script runs the phenix command phenix.mtz_dump (https://www.phenix-online.org/download/) to gather information on the unit cell and space group of the PDB. It then extracts the space group, unit cell information, and resolution for each PDB. 
