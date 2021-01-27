@@ -1,0 +1,8 @@
+refinement.refine.strategy=individual_sites+individual_adp+occupancies
+refinement.main.number_of_macro_cycles=8
+refinement.main.nqh_flips=True
+refinement.target_weights.optimize_xyz_weight=True
+refinement.target_weights.optimize_adp_weight=True
+refinement.hydrogens.refine=riding
+
+
