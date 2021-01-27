@@ -1,3 +1,4 @@
+#!/bin/bash
 
 #________________________________________________SET PREREQUISTICS________________________________________________#
 source phenix env
@@ -66,13 +67,13 @@ phenix.ready_set pdb_file_name=${PDB}.pdb
 #________________________________________________RUN REFINEMENT________________________________________________#
 if [[ -e "${PDB}_updated.pdb.ligands.cif" ]]; then
        echo '________________________________________________________Running refinement with ligand.________________________________________________________'
-         phenix.refine ${PDB}.updated.pdb ${PDB}.mtz ${PDB}_updated.pdb.ligands.cif finalize.params refinement.input.xray_data.r_free_flags.generate=True output.prefix="${PDB}" refinement.input.xray_data.labels=$xray_data_labels
+         phenix.refine ${PDB}.updated.pdb ${PDB}.mtz ${PDB}_updated.pdb.ligands.cif finalize.params refinement.input.xray_data.r_free_flags.generate=True output.prefix="${PDB}" refinement.input.xray_data.labels=$xray_data_labels adp.individual.anisotropic="not water and not element H"
 else
       echo '________________________________________________________Running refinement without ligand.________________________________________________________'
-        phenix.refine ${PDB}.updated.pdb ${PDB}.mtz finalize.params refinement.input.xray_data.r_free_flags.generate=True output.prefix="${PDB}" refinement.input.xray_data.labels=$xray_data_labels
+        phenix.refine ${PDB}.updated.pdb ${PDB}.mtz finalize.params refinement.input.xray_data.r_free_flags.generate=True output.prefix="${PDB}" refinement.input.xray_data.labels=$xray_data_labels adp.individual.anisotropic="not water and not element H"
 fi
 
-#__________________________________________RUN COMPOSITE OMIT MAP
+#__________________________________________RUN COMPOSITE OMIT MAP_______________________________________________________________#
 if [[ -e composite_omit_map.mtz ]]; then
         echo 'Composite omit map already created'
 else
