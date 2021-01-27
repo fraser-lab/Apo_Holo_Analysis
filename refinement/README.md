@@ -18,3 +18,6 @@ Output: Refined PDB file/log, composite omit file
 
 
 3) finalize.params.  #This file is use in both refinement scripts with additional inputs that are consistent across all refinements. 
+
+
+4) refinement_log_parser.py #This file is used to comb through the log file of refinement and extract Rvalues for analysis. 
