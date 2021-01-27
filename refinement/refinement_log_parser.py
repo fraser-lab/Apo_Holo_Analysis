@@ -1,11 +1,7 @@
 #!/usr/bin/env python
-#last edited: 2020-01-19
-#last edited by: Stephanie Wankowicz
-#git:
 
 import pandas as pd
 import os
-import datetime
 import argparse
 import sys
 
