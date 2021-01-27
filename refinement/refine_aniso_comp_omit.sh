@@ -1,18 +1,11 @@
 
-#________________________________________________INPUTS________________________________________________#
-export OMP_NUM_THREADS=1
-export MKL_NUM_THREADS=1
-export NUMEXPR_NUM_THREADS=1
-
-#________________________________________________SET PATHS________________________________________________#
+#________________________________________________SET PREREQUISTICS________________________________________________#
 source phenix env
-export PATH="/wynton/home/fraserlab/swankowicz/anaconda3/bin:$PATH"
-source activate qfit #qFit 
 
-#__________________________________DETERMINE RESOLUTION AND (AN)ISOTROPIC REFINEMENT__________________________________
 PDB=$1
 echo $PDB
 
+#__________________________________DETERMINE RESOLUTION AND (AN)ISOTROPIC REFINEMENT__________________________________
 
 if [[ -e "${PDB}-sf.cif" ]]; then #if SF is in cif format, convert
   phenix.mtz_to_cif ${PDB}-sf.cif
@@ -24,17 +17,59 @@ resrange=`grep "Resolution range:" <<< "${mtzmetadata}"` #determine the resoluti
 echo ${resrange}
 
 
-#_______________________________________________REFINEMENT PREP________________________________________________#
+#__________________________________DETERMINE FOBS v IOBS v FP__________________________________
+# List of Fo types we will check for
+obstypes="FP FOBS F-obs IOBS"
 
+# Get amplitude fields
+ampfields=`grep "amplitude" <<< "${mtzmetadata}"`
+ampfields=`echo "${ampfields}" | awk '{$1=$1};1' | cut -d " " -f 1`
+
+# Clear xray_data_labels variable
+xray_data_labels=""
+
+# Is amplitude an Fo?
+for field in ${ampfields}; do
+  # Check field in obstypes
+  if grep -F -q -w $field <<< "${obstypes}"; then
+    # Check SIGFo is in the mtz too!
+    if grep -F -q -w "SIG$field" <<< "${mtzmetadata}"; then
+      xray_data_labels="${field},SIG${field}";
+      break
+    fi
+  fi
+done
+if [ -z "${xray_data_labels}" ]; then
+  echo >&2 "Could not determine Fo field name with corresponding SIGFo in .mtz.";
+  echo >&2 "Was not among ${obstypes}. Please check .mtz file\!";
+  exit 1;
+else
+  echo "data labels: ${xray_data_labels}"
+fi
+
+
+#_____________________________DETERMINE R FREE FLAGS______________________________
+gen_Rfree=True
+rfreetypes="FREE R-free-flags"
+for field in ${rfreetypes}; do
+  if grep -F -q -w $field <<< "${mtzmetadata}"; then
+    gen_Rfree=False;
+    echo "Rfree column: ${field}";
+    break
+  fi
+done
+
+#_______________________________________________REFINEMENT PREP________________________________________________#
+phenix.ready_set pdb_file_name=${PDB}.pdb
 
 
 #________________________________________________RUN REFINEMENT________________________________________________#
 if [[ -e "${PDB}_updated.pdb.ligands.cif" ]]; then
        echo '________________________________________________________Running refinement with ligand.________________________________________________________'
-         phenix.refine ${PDB}_updated.pdb.updated.pdb ${PDB}.mtz ${PDB}_updated.pdb.ligands.cif finalize.params refinement.input.xray_data.r_free_flags.generate=True output.prefix="${PDB}" refinement.input.xray_data.labels=$xray_data_labels
+         phenix.refine ${PDB}.updated.pdb ${PDB}.mtz ${PDB}_updated.pdb.ligands.cif finalize.params refinement.input.xray_data.r_free_flags.generate=True output.prefix="${PDB}" refinement.input.xray_data.labels=$xray_data_labels
 else
       echo '________________________________________________________Running refinement without ligand.________________________________________________________'
-        phenix.refine ${PDB}_updated.pdb.updated.pdb ${PDB}.mtz finalize.params refinement.input.xray_data.r_free_flags.generate=True output.prefix="${PDB}" refinement.input.xray_data.labels=$xray_data_labels
+        phenix.refine ${PDB}.updated.pdb ${PDB}.mtz finalize.params refinement.input.xray_data.r_free_flags.generate=True output.prefix="${PDB}" refinement.input.xray_data.labels=$xray_data_labels
 fi
 
 #__________________________________________RUN COMPOSITE OMIT MAP
@@ -45,9 +80,9 @@ else
          echo 'No mtz file'
     else
          if grep -q FREE ${PDB}_mtzdump.out; then #if there are r_free_flags, don't re-generate.
-             phenix.composite_omit_map ${PDB}.mtz ${PDB}_updated.pdb.updated_refine_001.pdb omit-type=refine
+             phenix.composite_omit_map ${PDB}.mtz ${PDB}.updated_refine_001.pdb omit-type=refine
          else
-             phenix.composite_omit_map ${PDB}.mtz ${PDB}_updated.pdb.updated_refine_001.pdb omit-type=refine r_free_flags.generate=True
+             phenix.composite_omit_map ${PDB}.mtz ${PDB}.updated_refine_001.pdb omit-type=refine r_free_flags.generate=True
          fi
    fi
 fi
