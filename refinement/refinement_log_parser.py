@@ -29,4 +29,4 @@ if __name__ == '__main__':
     parser.add_argument('Holo')
     parser.add_argument('Apo')
     args = parser.parse_args()
-    parse_log(args.Holo_Log_File, args.Holo_Log_File, args.Holo, args.Apo)
+    parse_log(args.Holo_Log_File, args.Apo_Log_File, args.Holo, args.Apo)
