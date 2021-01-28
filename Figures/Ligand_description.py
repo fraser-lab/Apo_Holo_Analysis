@@ -24,6 +24,9 @@ print(np.nanmedian(chem['Molecular_Size']))
 print('Median Chem Name Count:')
 print(np.median(chem['ChemName'].value_counts()))
 
+print('Number of Unique Ligands:')
+print(len(chem['ChemName'].unique()))
+
 fig = plt.figure()
 sns.distplot(chem['Molecular_Size'], kde=False, label='')
 plt.xlabel('Molecular_Size')
@@ -38,7 +41,6 @@ plt.title('Top 30 Frequent Ligands in Dataset')
 plt.ylabel('Number of Ooccurrences')
 plt.xlabel('Ligand PDB ID')
 plt.xticks(rotation=45)
-plt.show()
 fig.savefig('chem_name_dist.png')
 
 
