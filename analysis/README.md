@@ -1,0 +1,1 @@
+This folder contains scripts used to assess the dynamics and other properties of the structures in our dataset. Please note that many additional scripts can be found in the qFit-3.0 repository(https://github.com/ExcitedStates/qfit-3.0). 
