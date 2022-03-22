@@ -1,6 +1,14 @@
 # Apo_Holo_Analysis
 
-Scripts are organized into folders according to each analysis. Each subfolder has a README explaining the scripts within that folder and how the scripts flow together.
+The scripts in this repository are related to the manuscript [Ligand binding remodels protein side chain conformational heterogeneity](https://elifesciences.org/articles/74114). 
+
+A corresponding blog post about tricks and tips about running a structural bioinformatic pipeline can be found [here]().
+
+Scripts are organized into four categories:
+1) PDB Selection 
+2) Refinement, Creation of Multiconformer Models
+3) Quality Control
+4) Analysis 
 
 Dependencies:
 
