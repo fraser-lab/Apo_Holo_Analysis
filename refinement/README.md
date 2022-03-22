@@ -1,4 +1,4 @@
-These scripts contain the workflow for refinement both before and after qFit. They all depend on Phenix.Refine. The phenix.refinement version used for pre-qFit refinement was 1.17 and the version used for post-qFit refinment was 1.19. Please note that phenix parameters can change with versions and certain PDBs needed individual attention in regards to refinement.
+These scripts contain the workflow for refinement both before and after qFit. They all depend on Phenix.Refine. The phenix.refinement version used for refinement was 1.18. Please note that phenix parameters can change with versions and certain PDBs needed individual attention in regards to refinement.
 
 
 
