@@ -14,6 +14,7 @@ def parse_log(log_holo, log_apo, holo, apo):
         if line.startswith('Final R-work'):
             rval.loc[1,'Rwork'] = line.split('=')[1][1:6]
             rval.loc[1,'Rfree'] = line.split('=')[2][1:6]
+    
     log = open(log_apo, 'r')
     for line in log:
       if line.startswith('Final R-work'):
@@ -28,5 +29,6 @@ if __name__ == '__main__':
     parser.add_argument('Apo_Log_File')
     parser.add_argument('Holo')
     parser.add_argument('Apo')
+    parser.add_argument('Step')
     args = parser.parse_args()
     parse_log(args.Holo_Log_File, args.Apo_Log_File, args.Holo, args.Apo)
