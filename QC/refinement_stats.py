@@ -3,7 +3,7 @@ import glob
 import pandas as pd
 import numpy as np
 import os
-import args
+import argsparse
 
 
 
@@ -34,6 +34,14 @@ def merge_rvalues(df):
     rvalue_AH['Rfree_diff_qFit'] = rvalue_AH['Rfree_qFit_x']-rvalue_AH['Rfree_qFit_y']
     return rvalue_AH
 
+
+ parser = argparse.ArgumentParser()
+    parser.add_argument('Holo_Log_File')
+    parser.add_argument('Apo_Log_File')
+    parser.add_argument('Holo')
+    parser.add_argument('Apo')
+    parser.add_argument('Step')
+    args = parser.parse_args()
 
 #__________________________________Read in reference file_____________________
 pairs = pd.read_csv('PDB_pairs.txt', sep='\t', header=None)
@@ -96,7 +104,6 @@ path=os.getcwd()
 all_files = glob.glob(path + "/*_rvalues.csv")
 
 li = []
-
 for filename in all_files:
     df = pd.read_csv(filename, index_col=None)
     li.append(df)
@@ -137,18 +144,7 @@ print('rvalue removed for refinement:')
 print(len(all_rvalues[all_rvalues['Rfree_PDB_Refine_YN']==1].index))
 
 all_rvalues = all_rvalues[all_rvalues['Rfree_Refine']<0.9]
-# #________________RFREE SCATTERPLOT (qFit/Refinement)_____________
-fig=plt.figure()
-scatter_plot_with_linear_fit(all_rvalues['Rfree_PDB'], all_rvalues['Rfree_Refine'], slope=1, y_intercept=0, color=all_rvalues['Rfree_PDB_Refine_YN'])#, label=)
-plt.xlabel('PDB Deposited Structure R-free')
-plt.legend(loc = 'upper left')
-plt.text(0.12, 0.25, 'Better PDB Structure') 
-plt.text(0.24, 0.15, 'Better Post Refinement')
-red_patch = mpatches.Patch(color=cmap(2), label='Remove')
-blue_patch = mpatches.Patch(color=cmap(0), label='Keep')
-plt.legend(handles=[red_patch, blue_patch], loc='upper left')
-plt.ylabel('Post Refinement R-free')
-plt.savefig('/Users/stephaniewankowicz/Downloads/qfit_paper/Refine_PDB.png')
+
 
 
 all_rvalues2 = all_rvalues[all_rvalues['Rfree_PDB_Refine_YN']==0] #selecting structures that passed 
@@ -167,28 +163,6 @@ print(len(all_rvalues2[all_rvalues2['Difference_qFit']>0].index))
 print(len(all_rvalues2[all_rvalues2['Difference_qFit']<0].index))
 print(len(all_rvalues2[all_rvalues2['Difference_qFit']==0].index))
 
-#________________RFREE SCATTERPLOT (qFit/Refinement)_____________
-fig = plt.figure()
-scatter_plot_with_linear_fit(all_rvalues2['Rfree_Refine'], all_rvalues2['Rfree_qFit'], slope=1, y_intercept=0, color=all_rvalues2['Rfree_Refine_qFit_YN'])
-plt.xlabel('Post Refinement R-free')
-plt.text(0.125, 0.3, 'Better Refinement') 
-plt.text(0.25, 0.15, 'Better qFit')
-plt.ylabel('Post qFit Refinement R-free')
-red_patch = mpatches.Patch(color=cmap(2), label='Remove')
-blue_patch = mpatches.Patch(color=cmap(0), label='Keep')
-plt.legend(handles=[red_patch, blue_patch], loc='upper left')
-fig.savefig('/Users/stephaniewankowicz/Downloads/qfit_paper/Refine_qFit.png')
-
-
-#________________RFREE DIFFERENCE FIGURE_____________
-all_rvalues2['Difference'] = all_rvalues2['Rfree_qFit'] - all_rvalues2['Rfree_Refine']
-
-fig = plt.figure()
-sns.distplot(all_rvalues2['Difference'], kde=False)
-plt.text(0.02, 100, 'Better Refinement')
-plt.text(-0.05, 100, 'Better qFit') 
-plt.xlabel('R-free Difference (qFit-Refinment)')
-fig.savefig('/Users/stephaniewankowicz/Downloads/qfit_paper/Refine_qFit_hist.png')
 
 
 #________________DIFFERENCE BETWEEN APO/HOLO STRUCTURES__________
@@ -210,19 +184,3 @@ print(len(post_qfit_AH[post_qfit_AH['Rfree_Apo_Holo_YN']==1].index))
 
 #output list of final structures that have to be removed
 post_qfit_AH[post_qfit_AH['Rfree_Apo_Holo_YN']==1].to_csv('/Users/stephaniewankowicz/Downloads/qfit_paper/PDB_toremove_AH.csv', index=False)
-
-print(post_qfit_AH['Rfree_Apo_Holo_YN'])
-
-#________________DIFFERENCE BETWEEN APO/HOLO STRUCTURES FIGURE__________
-fig=plt.figure()
-scatter_plot_with_linear_fit(post_qfit_AH['Rfree_qFit_x'], post_qfit_AH['Rfree_qFit_y'], slope=1, y_intercept=0, label='Rfree', color=post_qfit_AH['Rfree_Apo_Holo_YN'])
-plt.xlabel('Holo R-free')
-plt.legend(loc = 'upper left')
-plt.text(0.12, 0.4, 'Better Holo') 
-plt.text(0.4, 0.2, 'Better Apo')
-plt.ylabel('Apo R-free')
-red_patch = mpatches.Patch(color=cmap(2), label='Remove')
-blue_patch = mpatches.Patch(color=cmap(0), label='Keep')
-plt.legend(handles=[red_patch, blue_patch], loc='upper left')
-fig.savefig('/Users/stephaniewankowicz/Downloads/qfit_paper/post_qfit_AH_rfree.png')
-
