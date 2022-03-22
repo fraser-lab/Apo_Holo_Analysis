@@ -3,27 +3,21 @@ import glob
 import pandas as pd
 import numpy as np
 import os
-import seaborn as sns
-#import statistics
-import matplotlib.pyplot as plt
-from figure_functions import *	
-from matplotlib import cm
+import args
 
-#Figure Colors
-#colors = ["#1b9e77","#d95f02", "#7570b3","#e7298a","#66a61e", "#e6ab02", "#666666"]
-#sns.set_palette(sns.color_palette(colors))
-cmap = plt.cm.get_cmap('tab10')
-plt.rcParams.update({'font.size': 11})
-pd.set_option('display.max_columns', None)
 
-#reference files
-os.chdir('/Users/stephaniewankowicz/Downloads/qfit_paper/')
-pairs = pd.read_csv('ligand_supplementary_table1.txt', sep=' ', header=None)
-pairs = pairs.rename(columns={0: "Apo", 1: "Apo_Res", 2: "Holo", 3: "Holo_Res", 5:"Ligand"})
-pairs.drop_duplicates(inplace=True)
 
-AH_key = create_AH_key(pairs)
+# functions
 
+def create_AH_key(AH_pairs):
+    AH_key1 = AH_pairs[['Apo']]
+    AH_key2 = AH_pairs[['Holo']]
+    AH_key2.columns = ['PDB']
+    AH_key1.columns = ['PDB']
+    AH_key1['Apo_Holo'] = 'Apo'
+    AH_key2['Apo_Holo'] = 'Holo'
+    AH_key = pd.concat([AH_key1, AH_key2])
+    return AH_key
 
 def merge_rvalues(df):
     '''
@@ -39,6 +33,12 @@ def merge_rvalues(df):
     
     rvalue_AH['Rfree_diff_qFit'] = rvalue_AH['Rfree_qFit_x']-rvalue_AH['Rfree_qFit_y']
     return rvalue_AH
+
+
+#__________________________________Read in reference file_____________________
+pairs = pd.read_csv('PDB_pairs.txt', sep='\t', header=None)
+pairs = pairs.rename(columns={0: "Apo", 1: "Apo_Res", 2: "Holo", 3: "Holo_Res", 5:"Ligand"})
+AH_key = create_AH_key(pairs)
 
 
 ##______________________READ IN PRE REFINE DATA_____________________________
