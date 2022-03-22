@@ -5,10 +5,6 @@ import numpy as np
 import os
 import argsparse
 
-
-
-# functions
-
 def create_AH_key(AH_pairs):
     AH_key1 = AH_pairs[['Apo']]
     AH_key2 = AH_pairs[['Holo']]
@@ -37,7 +33,10 @@ def merge_rvalues(df):
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('base_dir')
+    parser.add_argument('PDB_file')
     args = parser.parse_args()
+    return args
+    
 
 def read_file(base_dir, step):
      all_files = glob.glob(base_dir + '/*' + step + '.csv')
@@ -46,9 +45,11 @@ def read_file(base_dir, step):
          df = pd.read_csv(filename, index_col=None)
          li.append(df)
      rvalues = pd.concat(li, axis=0, ignore_index=True)
+     cols = ['Rwork_x', 'Rwork_y', 'Rfree_x', 'Rfree_y']
+     rvalues[cols] = rvalues[cols].apply(pd.to_numeric, errors='coerce', axis=1)
      return rvalues
      
-def merge(df):
+def merge_AH(df):
     PDB = df.merge(AH_key)
     holo = PDB[PDB['Apo_Holo']=='Holo']
     apo = PDB[PDB['Apo_Holo']=='Apo']
@@ -58,90 +59,47 @@ def merge(df):
     return PDB_AH
     
 
+#_____________________________Read in arguments______________________________
+args = parse_args()
+
 #__________________________________Read in reference file_____________________
-pairs = pd.read_csv('PDB_pairs.txt', sep='\t', header=None)
+pairs = pd.read_csv(args.PDB_file, sep='\t', header=None)
 pairs = pairs.rename(columns={0: "Apo", 1: "Apo_Res", 2: "Holo", 3: "Holo_Res", 5:"Ligand"})
 AH_key = create_AH_key(pairs)
 
-#removing any structures with no R values
-PDB_AH= PDB_AH[(PDB_AH['Rfree_x']!='NULL ') & (PDB_AH['Rfree_y']!='NULL ') & (PDB_AH['Rwork_x']!='NULL ') & (PDB_AH['Rwork_y']!='NULL ')]
+#____________________________Read in refine values_____________
+pre_qFit = read_file(args.base_dir, 'pre_qFit')
+post_qFit = read_file(args.base_dir, 'post_qFit')
 
-#converting Rvalues to numeric
-cols = ['Rwork_x', 'Rwork_y', 'Rfree_x', 'Rfree_y']
-PDB_AH[cols] = PDB_AH[cols].apply(pd.to_numeric, errors='coerce', axis=1)
-
-
-
-##__________________DIFFERENCES BETWEEN STEPS_______________________________
-test = rvalues_PDB.merge(rvalues_refine, on='PDB') #combine original to refined rvalues
-test.columns = ['PDB', 'Rwork_PDB', 'Rfree_PDB', 'Rwork_Refine', 'Rfree_Refine']
-all_rvalues = test.merge(rvalues_postqfit) #combine original/refined rvalues with post qFit rvalues
-all_rvalues.columns = ['PDB', 'Rwork_PDB', 'Rfree_PDB', 'Rwork_Refine', 'Rfree_Refine', 'Rwork_qFit', 'Rfree_qFit']
-all_rvalues.drop_duplicates(inplace=True)
-
-#removing all rows without original rvalue data
-all_rvalues = all_rvalues[all_rvalues['Rwork_PDB']!='NULL ']
-all_rvalues = all_rvalues[all_rvalues['Rfree_PDB']!='NULL ']
-all_rvalues = all_rvalues[all_rvalues['Rfree_Refine']!='None\n']
-all_rvalues.dropna(inplace=True)
-
-
-#forcing Rvalue columns to be numeric
-cols = ['Rwork_Refine', 'Rfree_Refine', 'Rwork_qFit', 'Rfree_qFit', 'Rwork_PDB', 'Rfree_PDB']
-all_rvalues[cols] = all_rvalues[cols].apply(pd.to_numeric, errors='coerce', axis=1)
+##__________________DETERMINE DIFFERENCES BETWEEN STEPS_______________________________
+pre_post = pre_qFit.merge(post_qFit, on='PDB')
+pre_post.columns = ['PDB', 'Rwork_pre', 'Rfree_pre', 'Rwork_post', 'Rfree_post']
 
 #calculating the difference in rvalues between each step
-all_rvalues['Rfree_PDB_Refine'] = all_rvalues['Rfree_PDB'] - all_rvalues['Rfree_Refine']
-all_rvalues['Rfree_Refine_qFit'] = all_rvalues['Rfree_Refine'] - all_rvalues['Rfree_qFit']
+pre_post['Rfree_pre_post'] = pre_post['Rfree_pre'] - pre_post['Rfree_post']
 
 #labeling structures that will be removed due to high rfree values
-all_rvalues['Rfree_PDB_Refine_YN'] = np.where(((all_rvalues['Rfree_PDB'] - all_rvalues['Rfree_Refine']) < -0.025), 1, 0)
-all_rvalues['Rfree_Refine_qFit_YN'] = np.where(((all_rvalues['Rfree_Refine'] - all_rvalues['Rfree_qFit']) < -0.025), 1, 0)
+pre_post['Rfree_PDB_Refine_YN'] = np.where(((pre_post['Rfree_PDB'] - pre_post['Rfree_Refine']) < -0.025), 1, 0)
 
 #output initial rvalues to be removed.
-all_rvalues[all_rvalues['Rfree_PDB_Refine_YN']==1].to_csv('/Users/stephaniewankowicz/Downloads/qfit_paper/rvalues_toremove_PDB.csv', index=False)
+pre_post[pre_post['Rfree_pre_post_YN']==1].to_csv('PDB_rvalues_toremove.csv', index=False)
+pre_post_clean = pre_post[pre_post['Rfree_pre_post_YN'] == 0]
 
 print('rvalue removed for refinement:')
-print(len(all_rvalues[all_rvalues['Rfree_PDB_Refine_YN']==1].index))
-
-all_rvalues = all_rvalues[all_rvalues['Rfree_Refine']<0.9]
-
-
-
-all_rvalues2 = all_rvalues[all_rvalues['Rfree_PDB_Refine_YN']==0] #selecting structures that passed 
-
-#Output structures that will be removed for poor rfree values
-all_rvalues2[all_rvalues2['Rfree_Refine_qFit_YN']==1].to_csv('rvalues_toremove_qFit.csv', index=False)
-
-print('rvalue removed for refinement (post qFit):')
-print(len(all_rvalues2[all_rvalues2['Rfree_Refine_qFit_YN']==1].index))
-
-all_rvalues2 = all_rvalues2[all_rvalues2['Rfree_qFit']<0.4]
-
-all_rvalues2['Difference_qFit'] = all_rvalues2['Rfree_Refine'] - all_rvalues2['Rfree_qFit']
-
-print('Difference qFit:')
-print(len(all_rvalues2[all_rvalues2['Difference_qFit']>0].index))
-print(len(all_rvalues2[all_rvalues2['Difference_qFit']<0].index))
-print(len(all_rvalues2[all_rvalues2['Difference_qFit']==0].index))
-
+print(len(pre_post[pre_post['Rfree_pre_post_YN']==1].index))
 
 #________________DIFFERENCE BETWEEN APO/HOLO STRUCTURES__________
-all_rvalues3 = all_rvalues2[all_rvalues2['Rfree_Refine_qFit_YN']==0]
-
-
 #adding on pair information
-post_qfit = all_rvalues3.merge(AH_key) #we now want to look at the apo/holo pairs rather than individual sturctures; 
-
-post_qfit_AH = merge_rvalues(post_qfit) 
-post_qfit_AH.dropna(axis=0, inplace=True)
+pre_post_AH = merge_AH(pre_post_clean)
 
 #label structures that have Rfree difference of 5% between Apo/Holo structures
-post_qfit_AH['Rfree_Apo_Holo_YN'] = np.where((post_qfit_AH['Rfree_diff_qFit'] < -0.05) | (post_qfit_AH['Rfree_diff_qFit'] > 0.05), 1, 0)
+pre_post_AH['Rfree_AH_diff'] = pre_post_AH['Rfree_post_x'] - pre_post_AH['Rfree_post_y'] 
+
+pre_post_AH['Rfree_Apo_Holo_YN'] = np.where((pre_post_AH['Rfree_AH_diff'] < -0.05) | (pre_post_AH['Rfree_AH_diff'] > 0.05), 1, 0)
 
 #We are removing structures that have 
 print('rvalue removed for difference Apo/Holo:')
-print(len(post_qfit_AH[post_qfit_AH['Rfree_Apo_Holo_YN']==1].index))
+print(len(pre_post_AH[pre_post_AH['Rfree_Apo_Holo_YN']==1].index))
 
 #output list of final structures that have to be removed
-post_qfit_AH[post_qfit_AH['Rfree_Apo_Holo_YN']==1].to_csv('/Users/stephaniewankowicz/Downloads/qfit_paper/PDB_toremove_AH.csv', index=False)
+pre_post_AH[pre_post_AH['Rfree_Apo_Holo_YN']==1].to_csv('PDB_toremove_rvalues_AH.csv', index=False)
