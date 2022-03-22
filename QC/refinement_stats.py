@@ -34,42 +34,34 @@ def merge_rvalues(df):
     rvalue_AH['Rfree_diff_qFit'] = rvalue_AH['Rfree_qFit_x']-rvalue_AH['Rfree_qFit_y']
     return rvalue_AH
 
-
- parser = argparse.ArgumentParser()
-    parser.add_argument('Holo_Log_File')
-    parser.add_argument('Apo_Log_File')
-    parser.add_argument('Holo')
-    parser.add_argument('Apo')
-    parser.add_argument('Step')
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('base_dir')
     args = parser.parse_args()
+
+def read_file(base_dir, step):
+     all_files = glob.glob(base_dir + '/*' + step + '.csv')
+     li = []
+     for filename in all_files:
+         df = pd.read_csv(filename, index_col=None)
+         li.append(df)
+     rvalues = pd.concat(li, axis=0, ignore_index=True)
+     return rvalues
+     
+def merge(df):
+    PDB = df.merge(AH_key)
+    holo = PDB[PDB['Apo_Holo']=='Holo']
+    apo = PDB[PDB['Apo_Holo']=='Apo']
+    tmp = holo.merge(AH_pairs, left_on='PDB', right_on='Holo')
+    PDB_AH = test.merge(apo, left_on='Apo', right_on='PDB')
+    PDB_AH.drop_duplicates(inplace=True)
+    return PDB_AH
+    
 
 #__________________________________Read in reference file_____________________
 pairs = pd.read_csv('PDB_pairs.txt', sep='\t', header=None)
 pairs = pairs.rename(columns={0: "Apo", 1: "Apo_Res", 2: "Holo", 3: "Holo_Res", 5:"Ligand"})
 AH_key = create_AH_key(pairs)
-
-
-##______________________READ IN PRE REFINE DATA_____________________________
-os.chdir('/Users/stephaniewankowicz/Downloads/qfit_paper/210127_preqfit/pre_refine')
-path = os.getcwd()
-
-all_files = glob.glob(path + "/*_rvalues.csv")
-li = []
-for filename in all_files:
-    df = pd.read_csv(filename, index_col=None)
-    li.append(df)
-rvalues_PDB = pd.concat(li, axis=0, ignore_index=True)
-
-
-PDB = rvalues_PDB.merge(AH_key)
-holo = PDB[PDB['Apo_Holo']=='Holo']
-apo = PDB[PDB['Apo_Holo']=='Apo']
-test = holo.merge(AH_pairs, left_on='PDB', right_on='Holo')
-
-PDB_AH = test.merge(apo, left_on='Apo', right_on='PDB') 
-PDB_AH.drop_duplicates(inplace=True)
-
-
 
 #removing any structures with no R values
 PDB_AH= PDB_AH[(PDB_AH['Rfree_x']!='NULL ') & (PDB_AH['Rfree_y']!='NULL ') & (PDB_AH['Rwork_x']!='NULL ') & (PDB_AH['Rwork_y']!='NULL ')]
@@ -78,37 +70,6 @@ PDB_AH= PDB_AH[(PDB_AH['Rfree_x']!='NULL ') & (PDB_AH['Rfree_y']!='NULL ') & (PD
 cols = ['Rwork_x', 'Rwork_y', 'Rfree_x', 'Rfree_y']
 PDB_AH[cols] = PDB_AH[cols].apply(pd.to_numeric, errors='coerce', axis=1)
 
-
-
-###____________________READ IN POST REFINE, PRE QFIT_____________________________##
-os.chdir('/Users/stephaniewankowicz/Downloads/qfit_paper/210127_preqfit/')
-path=os.getcwd()
-
-
-all_files = glob.glob(path + "/*_rvalues.csv")
-
-li = []
-
-for filename in all_files:
-    df = pd.read_csv(filename, index_col=None)
-    li.append(df)
-
-rvalues_refine = pd.concat(li, axis=0, ignore_index=True)
-
-
-###____________________READ IN POST QFIT_____________________________##
-os.chdir('/Users/stephaniewankowicz/Downloads/qfit_paper/210426/')
-path=os.getcwd()
-
-
-all_files = glob.glob(path + "/*_rvalues.csv")
-
-li = []
-for filename in all_files:
-    df = pd.read_csv(filename, index_col=None)
-    li.append(df)
-
-rvalues_postqfit = pd.concat(li, axis=0, ignore_index=True)
 
 
 ##__________________DIFFERENCES BETWEEN STEPS_______________________________
@@ -150,7 +111,8 @@ all_rvalues = all_rvalues[all_rvalues['Rfree_Refine']<0.9]
 all_rvalues2 = all_rvalues[all_rvalues['Rfree_PDB_Refine_YN']==0] #selecting structures that passed 
 
 #Output structures that will be removed for poor rfree values
-all_rvalues2[all_rvalues2['Rfree_Refine_qFit_YN']==1].to_csv('/Users/stephaniewankowicz/Downloads/qfit_paper/rvalues_toremove_qFit.csv', index=False)
+all_rvalues2[all_rvalues2['Rfree_Refine_qFit_YN']==1].to_csv('rvalues_toremove_qFit.csv', index=False)
+
 print('rvalue removed for refinement (post qFit):')
 print(len(all_rvalues2[all_rvalues2['Rfree_Refine_qFit_YN']==1].index))
 
@@ -162,7 +124,6 @@ print('Difference qFit:')
 print(len(all_rvalues2[all_rvalues2['Difference_qFit']>0].index))
 print(len(all_rvalues2[all_rvalues2['Difference_qFit']<0].index))
 print(len(all_rvalues2[all_rvalues2['Difference_qFit']==0].index))
-
 
 
 #________________DIFFERENCE BETWEEN APO/HOLO STRUCTURES__________
