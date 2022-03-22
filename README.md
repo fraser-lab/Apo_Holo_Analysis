@@ -10,6 +10,8 @@ Scripts are organized into four categories:
 3) Quality Control
 4) Analysis 
 
+Inside each folder is another README that describes how to use the script/pipeline in each folder. 
+
 Dependencies:
 
 [qFit-3.0](https://github.com/ExcitedStates/qfit-3.0) 
