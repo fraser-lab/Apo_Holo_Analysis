@@ -32,5 +32,6 @@ for i in {2..100}; do
     python renumber.py -1 ${PDB_dir}/${apo}/${apo}_qFit_chain_renamed.pdb > ${PDB_dir}/${apo}/${apo}_qFit_renamed_renmbered.pdb
     
     #now that you have aligned PDBs, determine the RMSD between their alpha carbons
+    alpha_carbon_rmsd.py ${PDB_dir}/${holo}/${holo}_qFit.pdb_fitted.pdb ${PDB_dir}/${apo}/${apo}_qFit.pdb ${holo} ${apo}
   fi
- 
+done
