@@ -4,6 +4,9 @@
 This script will align two PDBs with the same sequence on top of each other. 
 Based on that alignement, it will then re-name chain IDs if needed and re-number each chain so chain A, residue 1 is referring to the same chain in each PDBs.
 All will be aligned to the apo structure. 
+
+It will then calculate the RMSD between the apo and holo structure. 
+This will output a csv file of RMSD for each residue in the Base Directory which can be used to determine average RMSD or RMSD of specific parts of the protein. 
 '''
 
 
@@ -25,7 +28,7 @@ for i in {2..100}; do
       echo 'file not found'     
       continue
   else
-    pymol -c python_pymol_pre.py -- ${PDB_dir}/${holo}/${holo}_qFit.pdb ${PDB_dir}/${apo}/${apo}_qFit.pdb
+    pymol -c python_pymol.py -- ${PDB_dir}/${holo}/${holo}_qFit.pdb ${PDB_dir}/${apo}/${apo}_qFit.pdb
     relabel_chain.py ${PDB_dir}/${holo}/${holo}_qFit_refitted.pdb ${PDB_dir}/${apo}/${apo}_qFit.pdb ${holo} ${apo}
     congregate_chain.py ${PDB_dir}/${apo}/${apo}_qFit_modified.pdb ${apo}
     python renumber.py -1 ${PDB_dir}/${holo}/${holo}_qFit_refitted_renamed_modified_chain_renamed.pdb > ${PDB_dir}/${holo}/${holo}_qFit_renamed_renmbered.pdb
