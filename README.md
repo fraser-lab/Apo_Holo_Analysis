@@ -1,5 +1,7 @@
 # Apo_Holo_Analysis
 
+Author: Stephanie Wankowicz
+
 The scripts in this repository are related to the manuscript [Ligand binding remodels protein side chain conformational heterogeneity](https://elifesciences.org/articles/74114). 
 
 A corresponding blog post about tricks and tips about running a structural bioinformatic pipeline can be found [here]().
