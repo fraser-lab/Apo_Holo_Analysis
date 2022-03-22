@@ -10,8 +10,8 @@ for i in {2..100}; do
   echo 'Apo:' ${apo}
   cd $base_dir
   
-  refinement.py ${base_dir}/${holo}/${holo} ${base_dir}/${apo}/${apo} ${holo} ${apo} 'pre_qFit'
-  refinement.py ${base_dir}/${holo}/${holo} ${base_dir}/${apo}/${apo} ${holo} ${apo} 'post_qFit'
+  refinement.py ${base_dir}/${holo}/${holo}_updated.pdb_refine_001.log ${base_dir}/${apo}/${apo}_updated.pdb_refine_001.log ${holo} ${apo} 'pre_qFit'
+  refinement.py ${base_dir}/${holo}/${holo}_qFit.log ${base_dir}/${apo}/${apo} ${holo} ${apo}_qFit.log 'post_qFit'
 
 done <$PDB_file
 
