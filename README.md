@@ -18,12 +18,11 @@ Dependencies:
 
 [Phenix](https://www.phenix-online.org/)
 
-python >3.8
+
+Python Dependencies (recommended to install in same conda env as qFit. See [qFit-3.0](https://github.com/ExcitedStates/qfit-3.0) for more details).
 
 numpy
-
 pandas
-
 Biopython
-
+glob
 
