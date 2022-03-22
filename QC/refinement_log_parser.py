@@ -20,7 +20,7 @@ def parse_log(log_holo, log_apo, holo, apo):
       if line.startswith('Final R-work'):
             rval.loc[2,'Rwork'] = line.split('=')[1][1:6]
             rval.loc[2,'Rfree'] = line.split('=')[2][1:6]
-    location =  holo + '_' + apo + '_rvalues.csv'
+    location =  holo + '_' + apo + '_' + args.Step + '_rvalues.csv'
     rval.to_csv(location, index=False)
 
 if __name__ == '__main__':
