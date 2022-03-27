@@ -4,3 +4,6 @@ Many of the analysis called within these scripts are from the [qFit repository] 
 
 To run all analysis scripts, use the analysis_wrapper.sh.
 
+Additionally, run_hbplus.sh can be used to look at hydrogen bond changes within multiconformer structures using [HBplus](https://www.ebi.ac.uk/thornton-srv/software/HBPLUS/). 
+
+
