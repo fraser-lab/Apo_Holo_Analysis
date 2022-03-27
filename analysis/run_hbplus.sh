@@ -3,7 +3,9 @@
 #install hbplus
 source phenix
 
-PDB_file=AH_pairs.txt
+PDB_dir = '/this/is/where/your/PDB/folders/are'
+PDB_file=holo_apo_pairs.txt # this file should have holo PDBs in column 1, apo PDBs in column 2.
+
 
 for i in {2..1268}; do
   holo=$(cat $PDB_file | awk '{ print $1 }' |head -n $i | tail -n 1)
