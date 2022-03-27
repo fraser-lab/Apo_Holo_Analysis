@@ -19,6 +19,7 @@ source pymol
 base_dir='/location/you/would/like/folders/of/PDBs/to/exist/' #base folder (where you want to put folders/pdb files)
 pdb_pairs=holo_apo_pairs.txt # this file should have holo PDBs in column 1, apo PDBs in column 2.
 
+#________________________________________________RUN ANALYSIS________________________________________________#
 for i in {2..100}; do
   holo=$(cat $PDB_file | awk '{ print $1 }' |head -n $i | tail -n 1)
   apo=$(cat $PDB_file | awk '{ print $2 }' | head -n $i | tail -n 1)
