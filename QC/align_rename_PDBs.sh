@@ -13,6 +13,7 @@ This will output a csv file of RMSD for each residue in the Base Directory which
 #____________________________________________SOURCE REQUIREMENTS____________________________________
 source phenix_env.sh #source phenix (fill in phenix location)
 source activate qfit #conda env with qFit 
+source pymol
 
 #________________________________________________INPUTS________________________________________________
 base_dir='/location/you/would/like/folders/of/PDBs/to/exist/' #base folder (where you want to put folders/pdb files)
