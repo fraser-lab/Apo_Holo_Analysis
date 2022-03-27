@@ -41,7 +41,7 @@ for i in {2..100}; do
    phenix.rotalyze model=${PDB_dir}/${holo}/${holo}_qFit.pdb_fitted.pdb outliers_only=False > ${output_dir}/${holo}_qFit_rotamer_output.txt
    python get_sasa.py ${PDB_dir}/${holo}/${holo}_qFit.pdb_fitted.pdb ${holo}_qFit ${output_dir}
    make_methyl_df.py ${PDB_dir}/${holo}/${holo}_qFit.pdb_fitted.pdb
-   res=$(python get_res.py  ${holo})
+   res=$(python get_res.py ${holo}.pdb ${holo})
    calc_OP.py ${output_dir}/${holo}_qFit_methyl.dat ${PDB_dir}/${holo}/${holo}_qFit.pdb_fitted.pdb ${output_dir}/${holo}_qFit_methyl.out -r ${res} -b ${b_fac}
    
 #APO STRUCTURE
@@ -50,7 +50,7 @@ for i in {2..100}; do
    phenix.rotalyze model=${PDB_dir}/${apo}/${apo}_qFit.pdb outliers_only=False > ${base_dir}/${apo}_qFit_rotamer_output.txt
    python get_sasa.py ${PDB_dir}/${apo}/${apo}_qFit.pdb ${apo}_qFit ${base_dir}
    make_methyl_df.py ${PDB_dir}/${apo}/${apo}_qFit.pdb
-   res=$(python get_res.py  ${apo})
+   res=$(python get_res.py ${apo}.pdb ${apo})
    calc_OP.py ${output_dir}/${apo}_qFit_methyl.dat ${PDB_dir}/${apo}/${apo}_qFit.pdb ${output_dir}/${apo}_qFit_methyl.out -r ${res} -b ${b_fac}
    fi
   
