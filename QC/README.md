@@ -6,3 +6,7 @@ Many of the analysis called within these scripts are from the [qFit repository] 
 2) Calculate clashscore from qFit refined structures.
 3) Align structures together, re-label chains and re-number structures based on apo structure, determine alpha Carbon RMSD between structures.
 6) Deterine RMSD between ligand of interest and other ligands in apo structure.
+
+To run all scripts in this repository, run align_rename_PDBs.sh.
+
+Note, [qFit] (https://github.com/ExcitedStates/qfit-3.0) will need to be installed.
