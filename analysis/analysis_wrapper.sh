@@ -54,9 +54,9 @@ for i in {2..100}; do
    calc_OP.py ${output_dir}/${apo}_qFit_methyl.dat ${PDB_dir}/${apo}/${apo}_qFit.pdb ${output_dir}/${apo}_qFit_methyl.out -r ${res} -b ${b_fac}
    fi
   
-   python subset_output_apo.py ${holo} ${apo} -dist 10.0 -qFit=Y -lig ${lig_name}
-   python subset_output_apo.py ${holo} ${apo} -dist 5.0 -qFit=Y -lig ${lig_name}
-   python subset_output_holo.py ${holo} ${apo} -dist 10.0 -qFit=Y -lig ${lig_name}
-   python subset_output_holo.py ${holo} ${apo} -dist 5.0 -qFit=Y -lig ${lig_name}
+   python subset_apo.py ${holo} ${apo} -dist 10.0 -qFit=Y -lig ${lig_name}
+   python subset_apo.py ${holo} ${apo} -dist 5.0 -qFit=Y -lig ${lig_name}
+   python subset_holo.py ${holo} ${apo} -dist 10.0 -qFit=Y -lig ${lig_name}
+   python subset_holo.py ${holo} ${apo} -dist 5.0 -qFit=Y -lig ${lig_name}
 fi
 done
