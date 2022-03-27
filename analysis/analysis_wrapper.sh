@@ -1,20 +1,29 @@
 #!/bin/bash
 
+'''
+This script will run all of the analysis for the apo and holo PDBs including:
+B-factors
+RMSF
+Order Parameters
+Solvent Exposure
+Rotamer Analysis
+
+It will then subset each analysis based on distance from the ligand. This distance is measured in angstroms.
+'''
+#____________________________________________SOURCE REQUIREMENTS____________________________________
+source phenix_env.sh #source phenix (fill in phenix location)
+source activate qfit #conda env with qFit 
+
+#________________________________________________INPUTS________________________________________________
+PDB_dir='/location/you/would/like/folders/of/PDBs/to/exist/' #base folder (where you want to put folders/pdb files)
+pdb_pairs=holo_apo_pairs.txt # this file should have holo PDBs in column 1, apo PDBs in column 2.
+output_dir='/where/you/want/the/output/of/the/analysis/to/go/'
 
 
-#__________________SET PATHS________________________________________________#
-source /wynton/group/fraser/swankowicz/phenix-installer-1.19.2-4158-intel-linux-2.6-x86_64-centos6/phenix-1.19.2-4158/phenix_env.sh
-export PATH="/wynton/home/fraserlab/swankowicz/anaconda3/bin:$PATH"
-source activate qfit
-
-PDB_file=/wynton/group/fraser/swankowicz/script/text_files/qfit_pairs_191218.txt
-output_dir='qfit_output/'
-PDB_dir='/wynton/group/fraser/swankowicz/AWS_refine_done/'
-
-#________________________________________________Qfit Analysis________________________________________________#
-for i in {2..200}; do
-  holo=$(cat $PDB_file | awk '{ print $1 }' |head -n $i | tail -n 1)
-  apo=$(cat $PDB_file | awk '{ print $2 }' | head -n $i | tail -n 1)
+#________________________________________________RUN ANALYSIS________________________________________________#
+for i in {2..100}; do
+  holo=$(cat $pdb_pairs | awk '{ print $1 }' |head -n $i | tail -n 1)
+  apo=$(cat $pdb_pairs | awk '{ print $2 }' | head -n $i | tail -n 1)
   echo 'Holo:' ${holo}
   echo 'Apo:' ${apo}
   cd $base_dir
@@ -26,7 +35,6 @@ for i in {2..200}; do
   else
    mv ${PDB_dir}/${holo}/${holo}_qFit_renamed_renmbered_refitted.pdb ${PDB_dir}/${holo}/${holo}_qFit.pdb_fitted.pdb
    mv ${PDB_dir}/${apo}/${apo}_qFit_renamed_renmbered.pdb ${PDB_dir}/${apo}/${apo}_qFit.pdb
-   #rename_chain.py ${PDB_dir}/${apo}/${apo}_qFit.pdb ${PDB_dir}/${holo}/${holo}_qFit.pdb_fitted.pdb ${apo} ${holo}
 
    b_fac=$(b_factor.py ${PDB_dir}/${holo}/${holo}_qFit.pdb_fitted.pdb --pdb=${holo}_qFit) #get heavy atom b-factor
    qfit_RMSF.py ${PDB_dir}/${holo}/${holo}_qFit.pdb_fitted.pdb --pdb=${holo}_qFit
@@ -42,7 +50,7 @@ for i in {2..200}; do
    phenix.rotalyze model=${PDB_dir}/${apo}/${apo}_qFit.pdb outliers_only=False > ${base_dir}/${apo}_qFit_rotamer_output.txt
    python get_sasa.py ${PDB_dir}/${apo}/${apo}_qFit.pdb ${apo}_qFit ${base_dir}
    make_methyl_df.py ${PDB_dir}/${apo}/${apo}_qFit.pdb
-   res=$(python /wynton/group/fraser/swankowicz/script/Wilson_b_extrac.py /wynton/group/fraser/swankowicz/mtz/191114/pdb${apo}.ent ${apo})
+   res=$(python Wilson_b_extrac.py /wynton/group/fraser/swankowicz/mtz/191114/pdb${apo}.ent ${apo})
    calc_OP.py ${output_dir}/${apo}_qFit_methyl.dat ${PDB_dir}/${apo}/${apo}_qFit.pdb ${output_dir}/${apo}_qFit_methyl.out -r ${res} -b ${b_fac}
    fi
   
