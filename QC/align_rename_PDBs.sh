@@ -30,7 +30,7 @@ for i in {2..100}; do
       echo 'file not found'     
       continue
   else
-    pymol -c python_pymol.py -- ${PDB_dir}/${holo}/${holo}_qFit.pdb ${PDB_dir}/${apo}/${apo}_qFit.pdb
+    pymol -c align_structures.py -- ${PDB_dir}/${holo}/${holo}_qFit.pdb ${PDB_dir}/${apo}/${apo}_qFit.pdb
     relabel_chain.py ${PDB_dir}/${holo}/${holo}_qFit_refitted.pdb ${PDB_dir}/${apo}/${apo}_qFit.pdb ${holo} ${apo}
     congregate_chain.py ${PDB_dir}/${apo}/${apo}_qFit_modified.pdb ${apo}
     python renumber.py -1 ${PDB_dir}/${holo}/${holo}_qFit_refitted_renamed_modified_chain_renamed.pdb > ${PDB_dir}/${holo}/${holo}_qFit_renamed_renmbered.pdb
