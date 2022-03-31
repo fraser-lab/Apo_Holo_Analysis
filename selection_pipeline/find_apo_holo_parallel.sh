@@ -11,10 +11,10 @@ OUTPUT: Text file with a list of paired PDBs with the resolution of each of them
 source phenix_env.sh #source phenix (fill in phenix location)
 source activate qfit #conda env with qFit 
 
-base_dir=$2
-
-
 apo_PDB=$1
+base_dir=$2
+holo_file=$3
+
 if [ -f ${base_dir}/${apo_PDB}/${apo_PDB}.pdb ]; then
          RESO1=$(grep ${apo_PDB} ${base_dir}/space_unit_reso.txt | head -n 1 | awk '{print $2}')
          SPACE1=$(grep ${apo_PDB} ${base_dir}/space_unit_reso.txt | head -n 1 | awk '{print $3}')
