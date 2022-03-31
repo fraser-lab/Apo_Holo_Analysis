@@ -52,11 +52,11 @@ while read apo_PDB; do
    holo_file=holo_PDBs.txt
    while read holo_PDB; do 
       if [ -f ${base_dir}/${holo_PDB}/${holo_PDB}.pdb ]; then
-         RESO2=$(grep ${holo_PDB} space_unit_reso.txt | head -n 1 | awk '{print $2}')
-         SPACE2=$(grep ${holo_PDB} space_unit_reso.txt | head -n 1 | awk '{print $3}')
+         RESO2=$(grep ${holo_PDB} ${base_dir}/space_unit_reso.txt | head -n 1 | awk '{print $2}')
+         SPACE2=$(grep ${holo_PDB} ${base_dir}/space_unit_reso.txt | head -n 1 | awk '{print $3}')
          if (( `echo ${RESO2}'<='${RESO1_upper} | bc` )) && (( `echo ${RESO2}'>='${RESO1_lower} | bc` )); then
            if [ $SPACE1 == $SPACE2 ]; then
-             UNIT2=$(grep ${holo_PDB} space_unit_reso.txt | tail -n 1 | sed "s/[(),]//g" | awk '{print $4,$5,$6,$7,$8,$9}')
+             UNIT2=$(grep ${holo_PDB} ${base_dir}/space_unit_reso.txt | tail -n 1 | sed "s/[(),]//g" | awk '{print $4,$5,$6,$7,$8,$9}')
              UNIT2=( $UNIT2 )
              if (( $(echo "${UNIT2[0]} <= ${UNIT1_0_upper}" |bc -l) )) && (( $(echo "${UNIT2[0]} >= ${UNIT1_0_lower}" |bc -l) )) && (( $(echo "${UNIT2[1]} <= ${UNIT1_1_upper}" |bc -l) )) && (( $(echo "${UNIT2[1]} >= ${UNIT1_1_lower}" |bc -l) )) && (( $(echo "${UNIT2[2]} <= ${UNIT1_2_upper}" |bc -l) )) && (( $(echo "${UNIT2[2]} >= ${UNIT1_2_lower}" |bc -l) )); then
                 if (( $(echo "${UNIT2[3]} <= ${UNIT1_3_upper}"|bc -l) )) && (( $(echo "${UNIT2[3]} >= ${UNIT1_3_lower}" |bc -l) )) && (( $(echo "${UNIT2[4]} <= ${UNIT1_4_upper}" |bc -l) )) && (( $(echo "${UNIT2[4]} >= ${UNIT1_4_lower}" |bc -l) )) &&  (( $(echo "${UNIT2[5]} <= ${UNIT1_5_upper}" |bc -l) )) && (( $(echo "${UNIT2[5]} >= ${UNIT1_5_lower}" |bc -l) )); then
@@ -77,7 +77,7 @@ while read apo_PDB; do
           continue
        fi
        RESO2=$(grep ${pair} ${base_dir}/space_unit_reso.txt | head -n 1 | awk '{print $2}')
-       UNIT2=$(grep ${pair} ${base_dir}space_unit_reso.txt | tail -n 1 | sed "s/[(),]//g" | awk '{print $4,$5,$6,$7,$8,$9}')
+       UNIT2=$(grep ${pair} ${base_dir}/space_unit_reso.txt | tail -n 1 | sed "s/[(),]//g" | awk '{print $4,$5,$6,$7,$8,$9}')
        SEQ2=$(grep ${pair} ${base_dir}/sequences.txt | head -n 1 | awk '{print $2}')
            if [[ -z ${SEQ1} ]]; then
               continue
