@@ -13,6 +13,7 @@
 
 #________________________________________________INPUTS________________________________________________
 apo_file=PDB_Apo.txt
+holo_file=PDB_Holo.txt
 base_dir='/location/you/would/like/folders/of/PDBs/to/exist/'
 
 
@@ -27,4 +28,4 @@ source activate qfit
 #________________________________________________RUN SCRIPT____________________________________________
 PDB=$(cat $apo_file | head -n $SGE_TASK_ID | tail -n 1)
 
-sh find_apo_holo_parallel.sh ${PDB} ${base_dir}
+sh find_apo_holo_parallel.sh ${PDB} ${base_dir} ${PDB_Holo}
