@@ -77,7 +77,6 @@ while read apo_PDB; do
           continue
        fi
        RESO2=$(grep ${pair} ${base_dir}/space_unit_reso.txt | head -n 1 | awk '{print $2}')
-       UNIT2=$(grep ${pair} ${base_dir}/space_unit_reso.txt | tail -n 1 | sed "s/[(),]//g" | awk '{print $4,$5,$6,$7,$8,$9}')
        SEQ2=$(grep ${pair} ${base_dir}/sequences.txt | head -n 1 | awk '{print $2}')
            if [[ -z ${SEQ1} ]]; then
               continue
@@ -85,14 +84,14 @@ while read apo_PDB; do
               continue
            else
               if [ "$SEQ1" = "$SEQ2" ]; then
-                 echo $line $line2 $RESO1 $RESO2 >> ${base_dir}/holo_apo_pairs.txt
+                 echo $apo_PDB $pair $RESO1 $RESO2 >> ${base_dir}/holo_apo_pairs.txt
               else
                  SEQ1_end5=${SEQ1:-5}
                  SEQ2_end5=${SEQ2:-5}
                  SEQ1_begin5=${SEQ1:5}
                  SEQ2_begin5=${SEQ2:5}
                  if [ "$SEQ1" = "$SEQ2_begin5" ] || [ "$SEQ1" = "$SEQ2_end5" ] || [ "$SEQ2" = "$SEQ1_end5" ] || [ "$SEQ2" = "$SEQ1_begin5" ]; then
-                       echo $line $line2 $RESO1 $RESO2 >> ${base_dir}/holo_apo_pairs.txt
+                       echo $apo_PDB $pair $RESO1 $RESO2 >> ${base_dir}/holo_apo_pairs.txt
                  fi
               fi
            fi
