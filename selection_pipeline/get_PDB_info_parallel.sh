@@ -26,8 +26,8 @@ source activate qfit #conda env with qFit
 
 
 #____________________________________RUN MTZ DUMP & EXTRACT CRYSTALLOGRAPHIC INFO____________________________
-  phenix.cif_as_mtz ${PDB}_ --ignore_bad_sigmas --extend_flags --merge #transfer cif into mtz file
-  phenix.mtz.dump ${PDB}.mtz > ${PDB}.dump
+  phenix.cif_as_mtz ${PDB}-sf.cif --ignore_bad_sigmas --extend_flags --merge #transfer cif into mtz file
+  phenix.mtz.dump ${PDB}-sf.mtz > ${PDB}.dump
   
 #___________________________________ADD CRYSTALOGRAPHIC DATA TO TEXT FILE__________________________________
   SPACE1=$(grep "^Space group number from file:" ${PDB}.dump | awk '{print $6,$7}')
