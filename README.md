@@ -1,6 +1,5 @@
 # Apo_Holo_Analysis
 
-Author: Stephanie Wankowicz
 Please cite:
 Wankowicz, S. A., de Oliveira, S. H., Hogan, D. W., van den Bedem, H., & Fraser, J. S. (2022). Ligand binding remodels protein side chain conformational heterogeneity. Elife, 11, e74114.
 
