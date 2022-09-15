@@ -10,7 +10,7 @@ The analysis included in the wrapper script are:
 5) Rotamer Assignment
 
 To run all analysis scripts, use the analysis_wrapper.sh.
-Note, [qFit] (https://github.com/ExcitedStates/qfit-3.0) will need to be installed.
+Note, [qFit](https://github.com/ExcitedStates/qfit-3.0) will need to be installed.
 
 You also have the option to subset any of these outputs based on a ligand in one of the structures.
 
