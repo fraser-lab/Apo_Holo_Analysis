@@ -30,12 +30,9 @@ for i in {2..100}; do
   find_largest_lig ${PDB_dir}/${holo}/${holo}_qFit.pdb ${holo}
   lig_name=$(cat "${holo}_ligand_name.txt")
   if [ ! -f ${PDB_dir}/${holo}/${holo}_qFit.pdb ] || [ ! -f ${PDB_dir}/${apo}/${apo}_qFit.pdb ]; then
-      echo 'File not found'     
-      continue
+      echo 'PDBs not found!'     
   else
-   mv ${PDB_dir}/${holo}/${holo}_qFit_renamed_renmbered_refitted.pdb ${PDB_dir}/${holo}/${holo}_qFit.pdb_fitted.pdb
-   mv ${PDB_dir}/${apo}/${apo}_qFit_renamed_renmbered.pdb ${PDB_dir}/${apo}/${apo}_qFit.pdb
-
+#HOLO STRUCTURE
    b_fac=$(b_factor.py ${PDB_dir}/${holo}/${holo}_qFit.pdb_fitted.pdb --pdb=${holo}_qFit) #get heavy atom b-factor
    qfit_RMSF.py ${PDB_dir}/${holo}/${holo}_qFit.pdb_fitted.pdb --pdb=${holo}_qFit
    phenix.rotalyze model=${PDB_dir}/${holo}/${holo}_qFit.pdb_fitted.pdb outliers_only=False > ${output_dir}/${holo}_qFit_rotamer_output.txt
